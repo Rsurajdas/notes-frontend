@@ -15,7 +15,7 @@
   --color-custom-neutral-950: #0e121b;
   --color-custom-blue-50: #ebf1ff;
   --color-custom-blue-500: #335cff;
-  --color-custom-blue-500: #2547d0;
+  --color-custom-blue-700: #2547d0;
   --color-custom-green-100: #d1fbe9;
   --color-custom-green-500: #21c16b;
   --color-custom-red-100: #ffd5d8;
@@ -52,11 +52,14 @@
 
   --shadow-custom-sm: 0 4px 0.375rem 0 rgba(240, 240, 240, 0.6);
   --shadow-custom-lg: 0 0.5rem 0.75rem 0 rgba(240, 240, 240, 0.6);
+
+  --shadow-custom-focus: 0 0 0 2px var(--color-custom-neutral-0),
+    0 0 0 4px var(--color-custom-neutral-400);
 }
 
 @layer base {
   body {
-    @apply bg-white text-custom-neutral-700;
+    @apply bg-white text-custom-neutral-700 p-16;
   }
 
   .text-preset-1 {
