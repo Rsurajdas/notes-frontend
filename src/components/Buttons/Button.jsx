@@ -2,6 +2,7 @@ export default function Button({
   text,
   variant = "primary",
   icon: Icon,
+  className,
   ...props
 }) {
   const styles =
@@ -13,7 +14,7 @@ export default function Button({
   return (
     <button
       {...props}
-      className={`rounded-custom-8 px-custom-200 py-custom-150 text-preset-4 disabled:bg-custom-neutral-100 disabled:text-custom-neutral-300 group inline-flex cursor-pointer items-center gap-2 disabled:cursor-not-allowed disabled:outline-none ${styles}`}
+      className={`rounded-custom-8 px-custom-200 py-custom-150 disabled:bg-custom-neutral-100 disabled:text-custom-neutral-300 group inline-flex cursor-pointer items-center justify-center gap-2 disabled:cursor-not-allowed disabled:outline-none ${className} ${styles}`}
     >
       <>
         {Icon && (

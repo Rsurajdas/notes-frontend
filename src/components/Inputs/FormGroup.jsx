@@ -2,6 +2,7 @@ import { useState } from "react";
 import { InfoCircle } from "../../icons/InfoCircle";
 import { ShowPassword } from "../../icons/ShowPassword";
 import { HidePassword } from "../../icons/HidePassword";
+import { Link } from "react-router";
 
 export default function FormGroup({
   type = "text",
@@ -11,16 +12,28 @@ export default function FormGroup({
   name,
   label,
   disabled,
+  hasLink = false,
+  hintText,
 }) {
   const [show, setShow] = useState(false);
   return (
     <div className="gap-custom-75 flex flex-col">
-      <label
-        htmlFor={htmlFor}
-        className="text-preset-4 text-custom-neutral-950"
-      >
-        {label}
-      </label>
+      <div className="flex items-center justify-between">
+        <label
+          htmlFor={htmlFor}
+          className="text-preset-4 text-custom-neutral-950"
+        >
+          {label}
+        </label>
+        {hasLink ? (
+          <Link
+            to="forgot-password"
+            className="font-inter text-custom-neutral-600 text-right text-sm/[1.4] hover:underline"
+          >
+            Forgot
+          </Link>
+        ) : null}
+      </div>
       <div className="relative w-full">
         <input
           type={show ? "text" : type}
@@ -53,20 +66,22 @@ export default function FormGroup({
           </button>
         ) : null}
       </div>
-      <small
-        className={`text-custom-neutral-${!disabled ? 600 : 300} group font-inter flex items-center gap-2 text-xs/[1.4] font-normal tracking-normal`}
-      >
-        <InfoCircle
-          width="16"
-          height="16"
-          className={
-            !disabled
-              ? "stroke-custom-neutral-600"
-              : "stroke-custom-neutral-300"
-          }
-        />{" "}
-        This is a hint text to help user.
-      </small>
+      {hintText ? (
+        <small
+          className={`text-custom-neutral-${!disabled ? 600 : 300} group font-inter flex items-center gap-2 text-xs/[1.4] font-normal tracking-normal`}
+        >
+          <InfoCircle
+            width="16"
+            height="16"
+            className={
+              !disabled
+                ? "stroke-custom-neutral-600"
+                : "stroke-custom-neutral-300"
+            }
+          />
+          {hintText}
+        </small>
+      ) : null}
     </div>
   );
 }
