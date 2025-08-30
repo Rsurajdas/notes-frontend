@@ -1,6 +1,4 @@
-import React from "react";
-
-export default function Google({ width, height, className }) {
+export function Google({ width, height, className }) {
   return (
     <svg
       width={width || "24"}
