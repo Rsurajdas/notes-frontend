@@ -1,4 +1,4 @@
-import { Form, Link, useLocation } from "react-router";
+import { Form, Link, useActionData, useLocation } from "react-router";
 import { Google } from "../../icons/Google";
 import { Logo } from "../../icons/Logo";
 import FormGroup from "../../components/Inputs/FormGroup";
@@ -6,6 +6,7 @@ import Button from "../../components/Buttons/Button";
 
 export default function Login() {
   const location = useLocation();
+  const data = useActionData();
 
   return (
     <>
@@ -30,6 +31,8 @@ export default function Login() {
             htmlFor={"email"}
             id={"email"}
             name={"email"}
+            hintText={data?.errors?.email}
+            error={Boolean(data?.errors?.email)}
           />
           <FormGroup
             label="Password"
@@ -38,7 +41,8 @@ export default function Login() {
             id={"password"}
             name={"password"}
             hasLink={location.pathname === "/auth/login"}
-            hintText="At least 8 characters"
+            hintText={data?.errors?.password || "At least 8 characters"}
+            error={Boolean(data?.errors?.password)}
           />
         </div>
         <div className="">

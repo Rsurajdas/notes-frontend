@@ -6,6 +6,7 @@ export const InfoCircle = ({ fill = "#0e121b", width, height, className }) => {
       height={height || "24"}
       fill="none"
       viewBox="0 0 24 24"
+      className="flex-shrink-0"
     >
       <path
         className={className}

@@ -6,6 +6,7 @@ import Login from "./pages/Authentication/Login";
 import Signup from "./pages/Authentication/Signup";
 import ForgotPassword from "./pages/Authentication/ForgotPassword";
 import ResetPassword from "./pages/Authentication/ResetPassword";
+import { loginAction } from "./actions/loginAction";
 
 const router = createBrowserRouter([
   {
@@ -18,7 +19,7 @@ const router = createBrowserRouter([
           {
             path: "auth",
             children: [
-              { path: "login", Component: Login },
+              { path: "login", Component: Login, action: loginAction },
               { path: "signup", Component: Signup },
               { path: "forgot-password", Component: ForgotPassword },
               { path: "reset-password", Component: ResetPassword },

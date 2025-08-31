@@ -14,6 +14,7 @@ export default function FormGroup({
   disabled,
   hasLink = false,
   hintText,
+  error,
 }) {
   const [show, setShow] = useState(false);
   return (
@@ -41,7 +42,9 @@ export default function FormGroup({
           id={id}
           name={name}
           disabled={disabled}
-          className="bg-custom-neutral-0 outline-custom-neutral-300 px-custom-200 py-custom-150 rounded-custom-8 placeholder:font-inter placeholder:text-custom-neutral-500 text-preset-5 text-custom-neutral-950 focus:shadow-custom-focus-input focus:outline-custom-neutral-950 hover:bg-custom-neutral-50 hover:focus:bg-custom-neutral-0 disabled:bg-custom-neutral-50 disabled:placeholder:text-custom-neutral-300 w-full text-sm/[1.3] outline outline-offset-[-1px] placeholder:text-sm/[1.3] placeholder:font-normal placeholder:tracking-[-0.2px] disabled:cursor-not-allowed"
+          className={`bg-custom-neutral-0 px-custom-200 py-custom-150 rounded-custom-8 placeholder:font-inter placeholder:text-custom-neutral-500 text-preset-5 text-custom-neutral-950 focus:shadow-custom-focus-input focus:outline-custom-neutral-950 hover:bg-custom-neutral-50 hover:focus:bg-custom-neutral-0 disabled:bg-custom-neutral-50 disabled:placeholder:text-custom-neutral-300 disabled:text-custom-neutral-300 w-full text-sm/[1.3] outline outline-offset-[-1px] placeholder:text-sm/[1.3] placeholder:font-normal placeholder:tracking-[-0.2px] disabled:cursor-not-allowed ${
+            error ? "outline-custom-red-500" : "outline-custom-neutral-300"
+          }`}
         />
         {type === "password" ? (
           <button
@@ -68,15 +71,17 @@ export default function FormGroup({
       </div>
       {hintText ? (
         <small
-          className={`text-custom-neutral-${!disabled ? 600 : 300} group font-inter flex items-center gap-2 text-xs/[1.4] font-normal tracking-normal`}
+          className={`text-custom-neutral-${!disabled ? 600 : 300} group font-inter flex items-start gap-2 text-xs/[1.4] font-normal tracking-normal ${disabled ? "text-custom-neutral-300" : error ? "text-custom-red-500" : "text-custom-neutral-600"}`}
         >
           <InfoCircle
             width="16"
             height="16"
             className={
-              !disabled
-                ? "stroke-custom-neutral-600"
-                : "stroke-custom-neutral-300"
+              disabled
+                ? "stroke-custom-neutral-300"
+                : error
+                  ? "stroke-custom-red-500"
+                  : "stroke-custom-neutral-300"
             }
           />
           {hintText}
