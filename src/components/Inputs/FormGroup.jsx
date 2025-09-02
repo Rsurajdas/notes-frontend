@@ -81,7 +81,7 @@ export default function FormGroup({
                 ? "stroke-custom-neutral-300"
                 : error
                   ? "stroke-custom-red-500"
-                  : "stroke-custom-neutral-300"
+                  : "stroke-custom-neutral-600"
             }
           />
           {hintText}
