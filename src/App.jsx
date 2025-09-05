@@ -7,6 +7,7 @@ import Signup from "./pages/Authentication/Signup";
 import ForgotPassword from "./pages/Authentication/ForgotPassword";
 import ResetPassword from "./pages/Authentication/ResetPassword";
 import { loginAction } from "./actions/loginAction";
+import AuthenticatedLayout from "./components/layouts/AuthenticatedLayout";
 
 const router = createBrowserRouter([
   {
@@ -24,6 +25,15 @@ const router = createBrowserRouter([
               { path: "forgot-password", Component: ForgotPassword },
               { path: "reset-password", Component: ResetPassword },
             ],
+          },
+        ],
+      },
+      {
+        Component: AuthenticatedLayout,
+        children: [
+          {
+            index: true,
+            element: <h1>Dashboard</h1>,
           },
         ],
       },
