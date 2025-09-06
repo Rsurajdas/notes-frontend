@@ -64,7 +64,7 @@
 
 @layer base {
   body {
-    @apply text-custom-neutral-700 bg-white;
+    @apply text-custom-neutral-950 bg-white;
   }
 
   .text-preset-1 {
