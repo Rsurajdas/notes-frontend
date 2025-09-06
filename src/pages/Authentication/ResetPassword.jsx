@@ -28,6 +28,7 @@ export default function ResetPassword() {
             id={"password"}
             name={"password"}
             hintText="At least 8 characters"
+            className="w-full"
           />
           <FormGroup
             label="Confirm Password"
@@ -35,6 +36,7 @@ export default function ResetPassword() {
             htmlFor={"confirm"}
             id={"confirm"}
             name={"confirm"}
+            className="w-full"
           />
         </div>
         <div className="">

@@ -29,6 +29,7 @@ export default function Signup() {
             htmlFor={"email"}
             id={"email"}
             name={"email"}
+            className="w-full"
           />
           <FormGroup
             label="Password"
@@ -38,6 +39,7 @@ export default function Signup() {
             name={"password"}
             hasLink={location.pathname === "/auth/login"}
             hintText="At least 8 characters"
+            className="w-full"
           />
         </div>
         <div className="">

@@ -33,6 +33,7 @@ export default function Login() {
             name={"email"}
             hintText={data?.errors?.email}
             error={Boolean(data?.errors?.email)}
+            className="w-full"
           />
           <FormGroup
             label="Password"
@@ -43,6 +44,7 @@ export default function Login() {
             hasLink={location.pathname === "/auth/login"}
             hintText={data?.errors?.password || "At least 8 characters"}
             error={Boolean(data?.errors?.password)}
+            className="w-full"
           />
         </div>
         <div className="">

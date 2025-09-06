@@ -27,6 +27,7 @@ export default function ForgotPassword() {
             htmlFor={"email"}
             id={"email"}
             name={"email"}
+            className="w-full"
           />
         </div>
         <div className="">
