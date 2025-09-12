@@ -1,7 +1,7 @@
 import Clock from "../../icons/Clock";
 import TagIcon from "../../icons/TagIcon";
-import Button from "../Buttons/Button";
-import LabelWithStatus from "../Labels/LabelWithStatus";
+import Button from "../../components/Buttons/Button";
+import LabelWithStatus from "../../components/Labels/LabelWithStatus";
 
 export default function NavDetail() {
   return (

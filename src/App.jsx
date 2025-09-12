@@ -8,7 +8,7 @@ import ForgotPassword from "./pages/Authentication/ForgotPassword";
 import ResetPassword from "./pages/Authentication/ResetPassword";
 import { loginAction } from "./actions/loginAction";
 import AuthenticatedLayout from "./components/layouts/AuthenticatedLayout";
-import Detail from "./components/Detail/Detail";
+import NoteDetail from "./pages/NoteDetail/NoteDetail";
 
 const router = createBrowserRouter([
   {
@@ -34,7 +34,7 @@ const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <Detail />,
+            element: <NoteDetail />,
           },
         ],
       },
