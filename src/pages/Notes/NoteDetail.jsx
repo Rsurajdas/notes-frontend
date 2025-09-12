@@ -6,7 +6,7 @@ import LabelWithStatus from "../../components/Labels/LabelWithStatus";
 export default function NavDetail() {
   return (
     <div className="border-custom-neutral-200 py-custom-250 px-custom-300 gap-custom-200 flex w-[calc(100%_-_34.25rem)] flex-col border-r">
-      <h1>React Performance Optimization</h1>
+      <h1 className="text-preset-1">React Performance Optimization</h1>
       <div className="gap-custom-100 flex flex-col">
         <LabelWithStatus
           text="Tags"
