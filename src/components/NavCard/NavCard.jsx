@@ -1,4 +1,5 @@
 import { NavLink } from "react-router";
+import dayjs from "dayjs";
 
 export default function NavCard({ item }) {
   return (
@@ -22,7 +23,9 @@ export default function NavCard({ item }) {
                 </span>
               ))}
             </div>
-            <p className="text-preset-6 text-custom-neutral-700">{item.date}</p>
+            <p className="text-preset-6 text-custom-neutral-700">
+              {dayjs(item.createdAt).format("DD MMM YYYY")}
+            </p>
           </div>
           <hr
             className={`rounded-custom-20 border-0 border-b group-hover:border-transparent ${isActive ? "border-transparent" : "border-custom-neutral-200"}`}
