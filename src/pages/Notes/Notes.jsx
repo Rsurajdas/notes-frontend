@@ -10,7 +10,7 @@ export default function Notes() {
         <Button
           text="+ Create New Note"
           variant="primary"
-          to="notes/new"
+          to="new"
           className=""
         />
         <NavCardList data={data?.data?.notes} loading={isPending} />
