@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 export default function NavCard({ item }) {
   return (
     <NavLink
-      to={`notes/${item.id}`}
+      to={`${item._id}`}
       className={({ isActive }) =>
         `gap-custom-50 hover:bg-custom-neutral-100 rounded-custom-6 group flex flex-col ${isActive ? "bg-custom-neutral-100" : ""}`
       }
