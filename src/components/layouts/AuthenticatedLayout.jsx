@@ -1,8 +1,6 @@
 import { Outlet } from "react-router";
 import Sidebar from "../Sidebar/SideBar";
 import MainHeader from "../MainHeader/MainHeader";
-import Button from "../Buttons/Button";
-import NavCardList from "../NavCard/NavCardList";
 import { useQuery } from "@tanstack/react-query";
 import instance from "../../utils/interceptors";
 
