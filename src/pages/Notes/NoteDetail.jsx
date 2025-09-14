@@ -2,9 +2,9 @@ import Clock from "../../icons/Clock";
 import TagIcon from "../../icons/TagIcon";
 import Button from "../../components/Buttons/Button";
 import LabelWithStatus from "../../components/Labels/LabelWithStatus";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import instance from "../../utils/interceptors";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import dayjs from "dayjs";
 import TextEditor from "../../components/TextEditor/TextEditor";
 import { useRef } from "react";
@@ -14,46 +14,58 @@ export default function NavDetail() {
   const tagRef = useRef(null);
   const headingRef = useRef(null);
   const { id } = useParams();
-  const result = useQuery({
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const reset = () => {
+    contentRef.current.setContent("");
+    tagRef.current.setContent("");
+    headingRef.current.setContent("<h1>Enter a title...</h1>");
+  };
+  const { isPending, isEnabled, data } = useQuery({
     queryKey: ["notes", id],
     queryFn: async () => {
-      return await instance.get(`/notes/${id}`);
+      const res = await instance.get(`/notes/${id}`);
+      return res?.data?.note;
     },
     enabled: !!id,
   });
+  const mutation = useMutation({
+    mutationFn: (data) => instance.post("/notes", data),
+    onSuccess: async (data) => {
+      await queryClient.invalidateQueries({ queryKey: ["notes"] });
+      reset();
+      navigate(`/notes/${data?.data?.note?._id}`);
+    },
+  });
 
-  if (result.isPending && result.isEnabled) {
+  if (isPending && isEnabled) {
     return <div>Loading...</div>;
   }
 
-  const note = result?.data?.data?.note;
-
-  const log = () => {
-    if (contentRef.current) {
-      console.log({
-        description: contentRef.current.getContent(),
-        tags: tagRef.current
-          .getContent()
-          .replace(/<\/?[^>]+(>|$)/g, "")
-          .split(", ")
-          .map((tag) => tag.trim()),
-        title: headingRef.current.getContent().replace(/<\/?[^>]+(>|$)/g, ""),
-      });
-    }
+  const onSave = () => {
+    mutation.mutate({
+      description: contentRef.current.getContent(),
+      tags: tagRef.current
+        .getContent()
+        .replace(/<\/?[^>]+(>|$)/g, "")
+        .split(", ")
+        .map((tag) => tag.trim()),
+      title: headingRef.current.getContent().replace(/<\/?[^>]+(>|$)/g, ""),
+    });
   };
 
   return (
     <div className="border-custom-neutral-200 py-custom-250 px-custom-300 gap-custom-200 flex w-[calc(100%_-_34.25rem)] flex-col border-r">
       <TextEditor
         ref={headingRef}
-        initialValue={`<h1>${id ? note?.title : "Enter a title..."}</h1>`}
+        initialValue={`<h1>${id ? data?.title : "Enter a title..."}</h1>`}
         toolbar={false}
       />
       <div className="gap-custom-100 flex flex-col">
         <LabelWithStatus
           text="Tags"
           icon={TagIcon}
-          status={note?.tags || []}
+          status={data?.tags || []}
           ref={tagRef}
           placeholder="Add tags separated by commas (e.g. Work, Planning)"
         />
@@ -61,8 +73,8 @@ export default function NavDetail() {
           text="Last edited"
           icon={Clock}
           status={
-            note?.updatedAt
-              ? dayjs(note?.updatedAt).format("DD MMM YYYY")
+            data?.updatedAt
+              ? dayjs(data?.updatedAt).format("DD MMM YYYY")
               : "Not yet saved"
           }
         />
@@ -70,14 +82,18 @@ export default function NavDetail() {
       <hr className="border-custom-neutral-200 border-0 border-b" />
       <TextEditor
         ref={contentRef}
-        initialValue={note?.description || ""}
+        initialValue={data?.description ? data?.description : ""}
         placeholder="Start typing your note here…"
       />
       <div className="gap-custom-200 mt-auto flex flex-col">
         <hr className="border-custom-neutral-200 border-0 border-b" />
         <div className="gap-custom-200 flex">
-          <Button text="Save Notes" variant="primary" onClick={log} />
-          <Button text="Cancel" variant="secondary" />
+          <Button
+            text={mutation.isPending ? "Adding..." : "Save Notes"}
+            variant="primary"
+            onClick={onSave}
+          />
+          <Button text="Cancel" variant="secondary" onClick={reset} />
         </div>
       </div>
     </div>

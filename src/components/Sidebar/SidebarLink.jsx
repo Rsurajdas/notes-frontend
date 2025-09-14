@@ -6,7 +6,7 @@ export default function SidebarLink({ to, icon: Icon, label }) {
     <NavLink
       to={to}
       className={({ isActive }) =>
-        `gap-custom-100 px-custom-150 py-custom-100 rounded-custom-8 ${isActive ? "bg-custom-neutral-100" : ""} hover:bg-custom-neutral-100 flex items-center`
+        `gap-custom-100 px-custom-150 py-custom-100 rounded-custom-8 ${isActive ? "bg-custom-neutral-100" : ""} hover:bg-custom-neutral-100 text-preset-4 flex items-center`
       }
     >
       {({ isActive }) => (
@@ -18,9 +18,7 @@ export default function SidebarLink({ to, icon: Icon, label }) {
               color={isActive ? "#335cff" : "#2b303b"}
             />
           )}{" "}
-          <span className="text-pretext-4 text-custom-neutral-950 w-full">
-            {label}
-          </span>
+          <span className="text-custom-neutral-950 w-full">{label}</span>
           {isActive ? <ChevronRight /> : null}
         </>
       )}
