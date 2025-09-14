@@ -22,20 +22,10 @@ instance.interceptors.request.use(
   },
 );
 
-const ERROR_MESSAGE = {
-  400: "Bad Request",
-  401: "Unauthorized",
-  403: "Forbidden",
-  404: "Not Found",
-  500: "Internal Server Error",
-};
-
 instance.interceptors.response.use(
   (response) => response.data,
   (error) => {
-    const status = error.response ? error.response.status : null;
-    const message = status ? ERROR_MESSAGE[status] || "Error" : "Network Error";
-    return Promise.reject(new Error(message));
+    return Promise.reject(error.response?.data);
   },
 );
 

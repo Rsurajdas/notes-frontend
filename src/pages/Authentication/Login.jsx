@@ -1,12 +1,58 @@
-import { Form, Link, useActionData, useLocation } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import { Google } from "../../icons/Google";
 import { Logo } from "../../icons/Logo";
 import FormGroup from "../../components/Inputs/FormGroup";
 import Button from "../../components/Buttons/Button";
+import { useMutation } from "@tanstack/react-query";
+import instance from "../../utils/interceptors";
+import isEmail from "validator/lib/isEmail";
+import { isStrongPassword } from "validator";
 
 export default function Login() {
   const location = useLocation();
-  const data = useActionData();
+  const navigate = useNavigate();
+  const mutation = useMutation({
+    mutationFn: async (data) => {
+      if (!data?.email || !data?.password) {
+        return;
+      }
+      return instance.post("/users/login", data);
+    },
+    onMutate: (variables) => {
+      const error = {};
+      const { email, password } = variables;
+      if (!email) {
+        error.email = "Email is required";
+      }
+      if (!password) {
+        error.password = "Password is required";
+      }
+      if (!isEmail(email) && !error.email) {
+        error.email = "Please enter a valid email address";
+      }
+      if (!isStrongPassword(password) && !error.password) {
+        error.password =
+          "Password must contain at least one lowercase, one uppercase, one number, and one symbol";
+      }
+      return Object.keys(error).length ? { errors: error } : null;
+    },
+    // eslint-disable-next-line no-unused-vars
+    onSettled: (data, error) => {
+      if (data) {
+        localStorage.setItem("token", data.token);
+        navigate("/notes");
+      }
+    },
+  });
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const email = String(formData.get("email"));
+    const password = String(formData.get("password"));
+
+    mutation.mutate({ email, password });
+  };
 
   return (
     <>
@@ -19,9 +65,10 @@ export default function Login() {
           Please log in to continue
         </p>
       </div>
-      <Form
+      <form
         method="post"
         className="gap-custom-200 flex w-full flex-col justify-center"
+        onSubmit={onSubmit}
       >
         <div className="pt-custom-300 gap-custom-200 flex w-full flex-col">
           <FormGroup
@@ -31,8 +78,8 @@ export default function Login() {
             htmlFor={"email"}
             id={"email"}
             name={"email"}
-            hintText={data?.errors?.email}
-            error={Boolean(data?.errors?.email)}
+            hintText={mutation.context?.errors?.email}
+            error={Boolean(mutation.context?.errors?.email)}
             className="w-full"
           />
           <FormGroup
@@ -42,8 +89,10 @@ export default function Login() {
             id={"password"}
             name={"password"}
             hasLink={location.pathname === "/auth/login"}
-            hintText={data?.errors?.password || "At least 8 characters"}
-            error={Boolean(data?.errors?.password)}
+            hintText={
+              mutation.context?.errors?.password || "At least 8 characters"
+            }
+            error={Boolean(mutation.context?.errors?.password)}
             className="w-full"
           />
         </div>
@@ -55,7 +104,7 @@ export default function Login() {
             className="text-preset-3 h-[2.75rem] w-full"
           />
         </div>
-      </Form>
+      </form>
       <div className="gap-custom-200 border-custom-neutral-200 pt-custom-300 pb-custom-200 flex w-full flex-col items-center border-y">
         <span className="text-preset-5">Or log in with:</span>
         <Button
