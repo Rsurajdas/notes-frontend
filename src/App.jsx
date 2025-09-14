@@ -6,7 +6,6 @@ import Login from "./pages/Authentication/Login";
 import Signup from "./pages/Authentication/Signup";
 import ForgotPassword from "./pages/Authentication/ForgotPassword";
 import ResetPassword from "./pages/Authentication/ResetPassword";
-import { loginAction } from "./actions/loginAction";
 import AuthenticatedLayout from "./components/layouts/AuthenticatedLayout";
 import NoteDetail from "./pages/Notes/NoteDetail";
 import Notes from "./pages/Notes/Notes";
@@ -22,7 +21,7 @@ const router = createBrowserRouter([
           {
             path: "auth",
             children: [
-              { path: "login", Component: Login, action: loginAction },
+              { path: "login", Component: Login },
               { path: "signup", Component: Signup },
               { path: "forgot-password", Component: ForgotPassword },
               { path: "reset-password", Component: ResetPassword },
