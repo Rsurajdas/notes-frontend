@@ -13,28 +13,35 @@ export default function NavDetail() {
   const contentRef = useRef(null);
   const tagRef = useRef(null);
   const headingRef = useRef(null);
-  const { id } = useParams();
+  const { noteId } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+
   const reset = () => {
     contentRef.current.setContent("");
     tagRef.current.setContent("");
     headingRef.current.setContent("<h1>Enter a title...</h1>");
   };
+
   const { isPending, isEnabled, data } = useQuery({
-    queryKey: ["notes", id],
+    queryKey: ["notes", noteId],
     queryFn: async () => {
-      const res = await instance.get(`/notes/${id}`);
+      const res = await instance.get(`/notes/${noteId}`);
       return res?.data?.note;
     },
-    enabled: !!id,
+
+    enabled: !!noteId,
   });
   const mutation = useMutation({
-    mutationFn: (data) => instance.post("/notes", data),
+    mutationFn: (data) => {
+      if (noteId) {
+        return instance.patch(`/notes/${noteId}`, data);
+      }
+      return instance.post("/notes", data);
+    },
     onSuccess: async (data) => {
       await queryClient.invalidateQueries({ queryKey: ["notes"] });
-      reset();
-      navigate(`/notes/${data?.data?.note?._id}`);
+      navigate(`/notes/${noteId ? noteId : data?.data?.note?._id}`);
     },
   });
 
@@ -58,7 +65,7 @@ export default function NavDetail() {
     <div className="border-custom-neutral-200 py-custom-250 px-custom-300 gap-custom-200 flex w-[calc(100%_-_34.25rem)] flex-col border-r">
       <TextEditor
         ref={headingRef}
-        initialValue={`<h1>${id ? data?.title : "Enter a title..."}</h1>`}
+        initialValue={`<h1>${noteId ? data?.title : "Enter a title..."}</h1>`}
         toolbar={false}
       />
       <div className="gap-custom-100 flex flex-col">
