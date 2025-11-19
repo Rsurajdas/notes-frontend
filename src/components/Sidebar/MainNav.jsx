@@ -11,7 +11,7 @@ export default function MainNav() {
           <SidebarLink to="notes" icon={Home} label="All Notes" />
         </li>
         <li>
-          <SidebarLink to="/archived" icon={Archive} label="Archived Notes" />
+          <SidebarLink to="archived" icon={Archive} label="Archived Notes" />
         </li>
       </ul>
     </nav>

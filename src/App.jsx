@@ -40,6 +40,14 @@ const router = createBrowserRouter([
               { path: "new", Component: NoteDetail },
             ],
           },
+          {
+            path: "archived",
+            Component: Notes,
+            children: [
+              { path: ":noteId", Component: NoteDetail },
+              { path: "new", Component: NoteDetail },
+            ],
+          },
         ],
       },
     ],

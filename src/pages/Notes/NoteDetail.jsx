@@ -4,10 +4,13 @@ import Button from "../../components/Buttons/Button";
 import LabelWithStatus from "../../components/Labels/LabelWithStatus";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import instance from "../../utils/interceptors";
-import { useNavigate, useParams } from "react-router";
+import { useNavigate, useOutletContext, useParams } from "react-router";
 import dayjs from "dayjs";
 import TextEditor from "../../components/TextEditor/TextEditor";
 import { useRef } from "react";
+import Archive from "../../icons/Archive";
+import Delete from "../../icons/Delete";
+import { Restore } from "../../icons/Restore";
 
 export default function NavDetail() {
   const contentRef = useRef(null);
@@ -16,6 +19,7 @@ export default function NavDetail() {
   const { noteId } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { isArchivedRoute } = useOutletContext();
 
   const reset = () => {
     contentRef.current.setContent("");
@@ -40,8 +44,13 @@ export default function NavDetail() {
       return instance.post("/notes", data);
     },
     onSuccess: async (data) => {
-      await queryClient.invalidateQueries({ queryKey: ["notes"] });
-      navigate(`/notes/${noteId ? noteId : data?.data?.note?._id}`);
+      await queryClient.invalidateQueries({
+        queryKey: ["notes", isArchivedRoute],
+      });
+      if (!noteId) {
+        navigate(`/notes/${noteId ? noteId : data?.data?.note?._id}`);
+        reset();
+      }
     },
   });
 
@@ -61,48 +70,69 @@ export default function NavDetail() {
     });
   };
 
+  const archiveNote = () => {
+    mutation.mutate({ isArchived: !isArchivedRoute });
+  };
+
   return (
-    <div className="border-custom-neutral-200 py-custom-250 px-custom-300 gap-custom-200 flex w-[calc(100%_-_34.25rem)] flex-col border-r">
-      <TextEditor
-        ref={headingRef}
-        initialValue={`<h1>${noteId ? data?.title : "Enter a title..."}</h1>`}
-        toolbar={false}
-      />
-      <div className="gap-custom-100 flex flex-col">
-        <LabelWithStatus
-          text="Tags"
-          icon={TagIcon}
-          status={data?.tags || []}
-          ref={tagRef}
-          placeholder="Add tags separated by commas (e.g. Work, Planning)"
+    <>
+      <div className="border-custom-neutral-200 py-custom-250 px-custom-300 gap-custom-200 flex w-[calc(100%_-_34.25rem)] shrink-0 flex-col border-r">
+        <TextEditor
+          ref={headingRef}
+          initialValue={`<h1>${noteId ? data?.title : "Enter a title..."}</h1>`}
+          toolbar={false}
         />
-        <LabelWithStatus
-          text="Last edited"
-          icon={Clock}
-          status={
-            data?.updatedAt
-              ? dayjs(data?.updatedAt).format("DD MMM YYYY")
-              : "Not yet saved"
-          }
-        />
-      </div>
-      <hr className="border-custom-neutral-200 border-0 border-b" />
-      <TextEditor
-        ref={contentRef}
-        initialValue={data?.description ? data?.description : ""}
-        placeholder="Start typing your note here…"
-      />
-      <div className="gap-custom-200 mt-auto flex flex-col">
-        <hr className="border-custom-neutral-200 border-0 border-b" />
-        <div className="gap-custom-200 flex">
-          <Button
-            text={mutation.isPending ? "Adding..." : "Save Notes"}
-            variant="primary"
-            onClick={onSave}
+        <div className="gap-custom-100 flex flex-col">
+          <LabelWithStatus
+            text="Tags"
+            icon={TagIcon}
+            status={data?.tags || []}
+            ref={tagRef}
+            placeholder="Add tags separated by commas (e.g. Work, Planning)"
           />
-          <Button text="Cancel" variant="secondary" onClick={reset} />
+          <LabelWithStatus
+            text="Last edited"
+            icon={Clock}
+            status={
+              data?.updatedAt
+                ? dayjs(data?.updatedAt).format("DD MMM YYYY")
+                : "Not yet saved"
+            }
+          />
+        </div>
+        <hr className="border-custom-neutral-200 border-0 border-b" />
+        <TextEditor
+          ref={contentRef}
+          initialValue={data?.description ? data?.description : ""}
+          placeholder="Start typing your note here…"
+        />
+        <div className="gap-custom-200 mt-auto flex flex-col">
+          <hr className="border-custom-neutral-200 border-0 border-b" />
+          <div className="gap-custom-200 flex">
+            <Button
+              text={mutation.isPending ? "Adding..." : "Save Notes"}
+              variant="primary"
+              onClick={onSave}
+            />
+            <Button text="Cancel" variant="secondary" onClick={reset} />
+          </div>
         </div>
       </div>
-    </div>
+      <div className="pl-custom-200 py-custom-250 gap-custom-150 flex w-full flex-col">
+        <Button
+          variant="seconday"
+          text={`${isArchivedRoute ? "Restore Note" : "Archive Note"}`}
+          icon={isArchivedRoute ? Restore : Archive}
+          className="justify-start"
+          onClick={archiveNote}
+        />
+        <Button
+          variant="seconday"
+          text="Delete Note"
+          icon={Delete}
+          className="justify-start"
+        />
+      </div>
+    </>
   );
 }
