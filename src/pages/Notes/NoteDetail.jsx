@@ -11,6 +11,7 @@ import { useRef } from "react";
 import Archive from "../../icons/Archive";
 import Delete from "../../icons/Delete";
 import { Restore } from "../../icons/Restore";
+import { REMOVE_HTML_TAGS_REGEX } from "../../utils";
 
 export default function NavDetail() {
   const contentRef = useRef(null);
@@ -54,6 +55,18 @@ export default function NavDetail() {
     },
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: () => {
+      return instance.delete(`/notes/${noteId}`);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ["notes", isArchivedRoute],
+      });
+      navigate(isArchivedRoute ? "/archived" : "/notes");
+    },
+  });
+
   if (isPending && isEnabled) {
     return <div>Loading...</div>;
   }
@@ -63,15 +76,21 @@ export default function NavDetail() {
       description: contentRef.current.getContent(),
       tags: tagRef.current
         .getContent()
-        .replace(/<\/?[^>]+(>|$)/g, "")
+        .replace(REMOVE_HTML_TAGS_REGEX, "") // Remove HTML tags
         .split(", ")
         .map((tag) => tag.trim()),
-      title: headingRef.current.getContent().replace(/<\/?[^>]+(>|$)/g, ""),
+      title: headingRef.current
+        .getContent()
+        .replace(REMOVE_HTML_TAGS_REGEX, ""),
     });
   };
 
   const archiveNote = () => {
     mutation.mutate({ isArchived: !isArchivedRoute });
+  };
+
+  const deleteNote = () => {
+    deleteMutation.mutate();
   };
 
   return (
@@ -131,6 +150,7 @@ export default function NavDetail() {
           text="Delete Note"
           icon={Delete}
           className="justify-start"
+          onClick={deleteNote}
         />
       </div>
     </>
