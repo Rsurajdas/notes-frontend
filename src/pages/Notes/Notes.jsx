@@ -22,6 +22,8 @@ export default function Notes() {
     },
   });
 
+  const notes = data?.data?.notes || [];
+
   return (
     <section className="pr-custom-400 flex h-[calc(100vh_-_5.0625rem)]">
       <div className="py-custom-250 pr-custom-200 pl-custom-400 border-custom-neutral-200 gap-custom-200 flex h-full w-[18.125rem] shrink-0 flex-col border-r">
@@ -37,8 +39,8 @@ export default function Notes() {
             them anytime.
           </p>
         ) : null}
-        {data?.data?.notes?.length ? (
-          <NavCardList data={data?.data?.notes} loading={isPending} />
+        {notes?.length ? (
+          <NavCardList data={notes} loading={isPending} />
         ) : (
           <div className="rounded-custom-8 border-custom-neutral-200 bg-custom-neutral-100 p-custom-100 border">
             {location.pathname === "/notes" ? (
@@ -60,7 +62,7 @@ export default function Notes() {
         )}
       </div>
       <>
-        <Outlet context={{ isArchivedRoute }} />
+        <Outlet context={{ notes, isArchivedRoute }} />
       </>
     </section>
   );
