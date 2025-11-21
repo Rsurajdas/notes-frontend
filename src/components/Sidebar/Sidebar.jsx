@@ -1,7 +1,6 @@
-import { Home } from "../../icons/Home";
 import { Logo } from "../../icons/Logo";
 import MainNav from "./MainNav";
-import SidebarLink from "./SidebarLink";
+import TagNav from "./TagNav";
 
 export default function Sidebar() {
   return (
@@ -9,7 +8,11 @@ export default function Sidebar() {
       <div className="py-custom-150">
         <Logo />
       </div>
-      <MainNav />
+      <div className="gap-custom-100 flex flex-col">
+        <MainNav />
+        <hr className="border-custom-neutral-200 border-b" />
+        <TagNav />
+      </div>
     </aside>
   );
 }

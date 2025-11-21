@@ -1,14 +1,18 @@
-export default function TagIcon({ width, height, color }) {
+export default function TagIcon({
+  width = "16",
+  height = "16",
+  color = "#0E121B",
+}) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width={width || "24"}
-      height={height || "24"}
+      width={width}
+      height={height}
       fill="none"
       viewBox="0 0 24 24"
     >
       <path
-        stroke={color || "#0E121B"}
+        stroke={color}
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth="1.8"
@@ -16,7 +20,7 @@ export default function TagIcon({ width, height, color }) {
         clipRule="evenodd"
       />
       <path
-        stroke={color || "#0E121B"}
+        stroke={color}
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth="1.8"

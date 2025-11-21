@@ -12,7 +12,7 @@ export default function LabelWithStatus({
   return (
     <div className="gap-custom-100 flex items-center">
       <div className="gap-custom-75 py-custom-50 flex w-[7.1875rem] items-center">
-        {Icon && <Icon width="20" height="20" color="#2B303B" />}
+        {Icon && <Icon width="16" height="16" color="#2B303B" />}
         <span className="text-preset-5 text-custom-neutral-700">{text}</span>
       </div>
       {isArr ? (

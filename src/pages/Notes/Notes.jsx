@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import Button from "../../components/Buttons/Button";
-import NavCardList from "../../components/NavCard/NavCardList";
+import NavNoteCardList from "../../components/NavNoteCard/NavNoteCardList";
 import { Link, Outlet, useMatches } from "react-router";
 import { useLocation } from "react-router";
 import instance from "../../utils/interceptors";
@@ -40,7 +40,7 @@ export default function Notes() {
           </p>
         ) : null}
         {notes?.length ? (
-          <NavCardList data={notes} loading={isPending} />
+          <NavNoteCardList data={notes} loading={isPending} />
         ) : (
           <div className="rounded-custom-8 border-custom-neutral-200 bg-custom-neutral-100 p-custom-100 border">
             {location.pathname === "/notes" ? (

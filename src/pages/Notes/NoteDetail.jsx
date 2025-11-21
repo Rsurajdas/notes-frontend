@@ -69,6 +69,9 @@ export default function NavDetail() {
       await queryClient.invalidateQueries({
         queryKey: ["notes", isArchivedRoute],
       });
+      await queryClient.invalidateQueries({
+        queryKey: ["tags"],
+      });
       if (!noteId) {
         navigate(`/notes/${noteId ? noteId : data?.data?.note?._id}`);
         reset();
@@ -83,6 +86,9 @@ export default function NavDetail() {
     onSuccess: async () => {
       await queryClient.invalidateQueries({
         queryKey: ["notes", isArchivedRoute],
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ["tags"],
       });
       navigate(isArchivedRoute ? "/archived" : "/notes");
     },

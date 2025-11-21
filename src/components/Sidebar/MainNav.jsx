@@ -5,7 +5,7 @@ import Archive from "../../icons/Archive";
 
 export default function MainNav() {
   return (
-    <nav className="pb-custom-100 border-custom-neutral-200 border-b">
+    <nav>
       <ul className="gap-custom-50 flex flex-col">
         <li>
           <SidebarLink to="notes" icon={Home} label="All Notes" />
