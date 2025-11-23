@@ -11,8 +11,8 @@ export default function TagNav() {
   } = useQuery({
     queryKey: ["tags"],
     queryFn: async () => {
-      const res = await instance.get("/tags");
-      return res?.tags;
+      const res = await instance.get("/notes/tags");
+      return res?.data?.tags;
     },
   });
 
@@ -29,7 +29,7 @@ export default function TagNav() {
             {tags?.map((tag, idx) => (
               <SidebarLink
                 key={idx}
-                to={tag.toLowerCase()}
+                to={`tags/${tag.toLowerCase()}`}
                 icon={TagIcon}
                 label={tag}
               />
