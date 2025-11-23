@@ -9,6 +9,7 @@ import ResetPassword from "./pages/Authentication/ResetPassword";
 import AuthenticatedLayout from "./components/layouts/AuthenticatedLayout";
 import NoteDetail from "./pages/Notes/NoteDetail";
 import Notes from "./pages/Notes/Notes";
+import { Navigate } from "react-router";
 
 const router = createBrowserRouter([
   {
@@ -33,6 +34,10 @@ const router = createBrowserRouter([
         Component: AuthenticatedLayout,
         children: [
           {
+            index: true,
+            element: <Navigate to="/notes" />,
+          },
+          {
             path: "notes",
             Component: Notes,
             children: [
@@ -47,6 +52,11 @@ const router = createBrowserRouter([
               { path: ":noteId", Component: NoteDetail },
               { path: "new", Component: NoteDetail },
             ],
+          },
+          {
+            path: "tags",
+            Component: Notes,
+            children: [{ path: ":tag", Component: NoteDetail }],
           },
         ],
       },
