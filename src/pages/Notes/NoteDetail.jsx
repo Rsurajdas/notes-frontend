@@ -21,7 +21,7 @@ export default function NavDetail() {
   const { noteId } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { notes, isArchivedRoute } = useOutletContext();
+  const { notes, isArchivedRoute, isTagRoute } = useOutletContext();
   const [showModal, setShowModal] = useState("");
 
   const reset = () => {
@@ -45,18 +45,30 @@ export default function NavDetail() {
   });
 
   useEffect(() => {
-    if (!notes.length) {
-      const path = isArchivedRoute ? "/archived" : "/notes";
+    if (notes?.length === 0 && !isTagRoute) {
+      const path = isArchivedRoute ? `/archived` : `/notes`;
       navigate(path);
       return;
     }
 
-    const isAvailable = notes?.find((item) => item._id === noteId);
+    const isAvailable = !!notes?.find((item) => item._id === noteId);
 
-    if (!isAvailable && !isPending && isEnabled) {
-      navigate(`/notes/${notes?.[0]?._id}`);
+    if (!isAvailable && !isTagRoute) {
+      const path = isArchivedRoute
+        ? `/archived/${notes?.[0]?._id}`
+        : `/notes/${notes?.[0]?._id}`;
+
+      navigate(path);
     }
-  }, [notes, isPending, isEnabled, noteId, navigate, isArchivedRoute]);
+  }, [
+    notes,
+    isPending,
+    isEnabled,
+    noteId,
+    navigate,
+    isArchivedRoute,
+    isTagRoute,
+  ]);
 
   const mutation = useMutation({
     mutationFn: (data) => {
