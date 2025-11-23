@@ -1,9 +1,14 @@
-export const Restore = ({ fill = "#0e121b", width, height, className }) => {
+export const Restore = ({
+  fill = "#0e121b",
+  width = 24,
+  height = 24,
+  className,
+}) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width={width || "24"}
-      height={height || "24"}
+      width={width}
+      height={height}
       fill="none"
       viewBox="0 0 24 24"
     >

@@ -18,7 +18,9 @@ export default function SidebarLink({ to, icon: Icon, label }) {
               color={isActive ? "#335cff" : "#2b303b"}
             />
           )}{" "}
-          <span className="text-custom-neutral-950 w-full">{label}</span>
+          <span className="text-custom-neutral-700 w-full capitalize">
+            {label}
+          </span>
           {isActive ? <ChevronRight /> : null}
         </>
       )}

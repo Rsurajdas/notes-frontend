@@ -1,7 +1,7 @@
 import { NavLink } from "react-router";
 import dayjs from "dayjs";
 
-export default function NavCard({ item }) {
+export default function NavNoteCard({ item }) {
   return (
     <NavLink
       to={`${item._id}`}
@@ -13,7 +13,7 @@ export default function NavCard({ item }) {
         <>
           <div className="gap-custom-150 p-custom-100 flex flex-col">
             <h3 className="text-preset-3">{item.title}</h3>
-            <div className="gap-custom-50 flex items-center">
+            <div className="gap-custom-50 flex flex-wrap items-center">
               {item.tags.map((tag, idx) => (
                 <span
                   key={idx}

@@ -4,37 +4,105 @@ import Button from "../../components/Buttons/Button";
 import LabelWithStatus from "../../components/Labels/LabelWithStatus";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import instance from "../../utils/interceptors";
-import { useNavigate, useParams } from "react-router";
+import { useNavigate, useOutletContext, useParams } from "react-router";
 import dayjs from "dayjs";
 import TextEditor from "../../components/TextEditor/TextEditor";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import Archive from "../../icons/Archive";
+import Delete from "../../icons/Delete";
+import { Restore } from "../../icons/Restore";
+import { REMOVE_HTML_TAGS_REGEX } from "../../utils";
+import Modal from "../../components/Modal/Modal";
 
 export default function NavDetail() {
   const contentRef = useRef(null);
   const tagRef = useRef(null);
   const headingRef = useRef(null);
-  const { id } = useParams();
+  const { noteId } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { notes, isArchivedRoute, isTagRoute } = useOutletContext();
+  const [showModal, setShowModal] = useState("");
+
   const reset = () => {
     contentRef.current.setContent("");
     tagRef.current.setContent("");
     headingRef.current.setContent("<h1>Enter a title...</h1>");
   };
-  const { isPending, isEnabled, data } = useQuery({
-    queryKey: ["notes", id],
+
+  const {
+    isPending,
+    isEnabled,
+    data: note,
+  } = useQuery({
+    queryKey: ["notes", noteId],
     queryFn: async () => {
-      const res = await instance.get(`/notes/${id}`);
+      const res = await instance.get(`/notes/${noteId}`);
       return res?.data?.note;
     },
-    enabled: !!id,
+
+    enabled: !!noteId,
   });
+
+  useEffect(() => {
+    if (notes?.length === 0 && !isTagRoute) {
+      const path = isArchivedRoute ? `/archived` : `/notes`;
+      navigate(path);
+      return;
+    }
+
+    const isAvailable = !!notes?.find((item) => item._id === noteId);
+
+    if (!isAvailable && !isTagRoute) {
+      const path = isArchivedRoute
+        ? `/archived/${notes?.[0]?._id}`
+        : `/notes/${notes?.[0]?._id}`;
+
+      navigate(path);
+    }
+  }, [
+    notes,
+    isPending,
+    isEnabled,
+    noteId,
+    navigate,
+    isArchivedRoute,
+    isTagRoute,
+  ]);
+
   const mutation = useMutation({
-    mutationFn: (data) => instance.post("/notes", data),
+    mutationFn: (data) => {
+      if (noteId) {
+        return instance.patch(`/notes/${noteId}`, data);
+      }
+      return instance.post("/notes", data);
+    },
     onSuccess: async (data) => {
-      await queryClient.invalidateQueries({ queryKey: ["notes"] });
-      reset();
-      navigate(`/notes/${data?.data?.note?._id}`);
+      await queryClient.invalidateQueries({
+        queryKey: ["notes", isArchivedRoute],
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ["tags"],
+      });
+      if (!noteId) {
+        navigate(`/notes/${noteId ? noteId : data?.data?.note?._id}`);
+        reset();
+      }
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: () => {
+      return instance.delete(`/notes/${noteId}`);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ["notes", isArchivedRoute],
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ["tags"],
+      });
+      navigate(isArchivedRoute ? "/archived" : "/notes");
     },
   });
 
@@ -47,55 +115,106 @@ export default function NavDetail() {
       description: contentRef.current.getContent(),
       tags: tagRef.current
         .getContent()
-        .replace(/<\/?[^>]+(>|$)/g, "")
+        .replace(REMOVE_HTML_TAGS_REGEX, "") // Remove HTML tags
         .split(", ")
         .map((tag) => tag.trim()),
-      title: headingRef.current.getContent().replace(/<\/?[^>]+(>|$)/g, ""),
+      title: headingRef.current
+        .getContent()
+        .replace(REMOVE_HTML_TAGS_REGEX, ""),
     });
   };
 
+  const archiveNote = () => {
+    mutation.mutate({ isArchived: !isArchivedRoute });
+    setShowModal("");
+  };
+
+  const deleteNote = () => {
+    deleteMutation.mutate();
+    setShowModal("");
+  };
+
   return (
-    <div className="border-custom-neutral-200 py-custom-250 px-custom-300 gap-custom-200 flex w-[calc(100%_-_34.25rem)] flex-col border-r">
-      <TextEditor
-        ref={headingRef}
-        initialValue={`<h1>${id ? data?.title : "Enter a title..."}</h1>`}
-        toolbar={false}
-      />
-      <div className="gap-custom-100 flex flex-col">
-        <LabelWithStatus
-          text="Tags"
-          icon={TagIcon}
-          status={data?.tags || []}
-          ref={tagRef}
-          placeholder="Add tags separated by commas (e.g. Work, Planning)"
+    <>
+      <div className="border-custom-neutral-200 py-custom-250 px-custom-300 gap-custom-200 flex w-[calc(100%_-_34.25rem)] shrink-0 flex-col border-r">
+        <TextEditor
+          ref={headingRef}
+          initialValue={`<h1>${noteId ? note?.title : "Enter a title..."}</h1>`}
+          toolbar={false}
         />
-        <LabelWithStatus
-          text="Last edited"
-          icon={Clock}
-          status={
-            data?.updatedAt
-              ? dayjs(data?.updatedAt).format("DD MMM YYYY")
-              : "Not yet saved"
-          }
-        />
-      </div>
-      <hr className="border-custom-neutral-200 border-0 border-b" />
-      <TextEditor
-        ref={contentRef}
-        initialValue={data?.description ? data?.description : ""}
-        placeholder="Start typing your note here…"
-      />
-      <div className="gap-custom-200 mt-auto flex flex-col">
-        <hr className="border-custom-neutral-200 border-0 border-b" />
-        <div className="gap-custom-200 flex">
-          <Button
-            text={mutation.isPending ? "Adding..." : "Save Notes"}
-            variant="primary"
-            onClick={onSave}
+        <div className="gap-custom-100 flex flex-col">
+          <LabelWithStatus
+            text="Tags"
+            icon={TagIcon}
+            status={note?.tags || []}
+            ref={tagRef}
+            placeholder="Add tags separated by commas (e.g. Work, Planning)"
           />
-          <Button text="Cancel" variant="secondary" onClick={reset} />
+          <LabelWithStatus
+            text="Last edited"
+            icon={Clock}
+            status={
+              note?.updatedAt
+                ? dayjs(note?.updatedAt).format("DD MMM YYYY")
+                : "Not yet saved"
+            }
+          />
+        </div>
+        <hr className="border-custom-neutral-200 border-0 border-b" />
+        <TextEditor
+          ref={contentRef}
+          initialValue={note?.description ? note?.description : ""}
+          placeholder="Start typing your note here…"
+        />
+        <div className="gap-custom-200 mt-auto flex flex-col">
+          <hr className="border-custom-neutral-200 border-0 border-b" />
+          <div className="gap-custom-200 flex">
+            <Button
+              text={mutation.isPending ? "Adding..." : "Save Notes"}
+              variant="primary"
+              onClick={onSave}
+            />
+            <Button text="Cancel" variant="secondary" onClick={reset} />
+          </div>
         </div>
       </div>
-    </div>
+      <div className="pl-custom-200 py-custom-250 gap-custom-150 flex w-full flex-col">
+        <Button
+          variant="seconday"
+          text={`${isArchivedRoute ? "Restore Note" : "Archive Note"}`}
+          icon={isArchivedRoute ? Restore : Archive}
+          className="justify-start"
+          onClick={() => setShowModal("archive")}
+        />
+        <Button
+          variant="seconday"
+          text="Delete Note"
+          icon={Delete}
+          className="justify-start"
+          onClick={() => setShowModal("delete")}
+        />
+      </div>
+      {showModal === "archive" ? (
+        <Modal
+          icon={Archive}
+          head={isArchivedRoute ? "Restore Note" : "Archive Note"}
+          text={`Are you sure you want to ${
+            isArchivedRoute ? "restore" : "archive"
+          } this note? ${isArchivedRoute ? "" : "You can find it in the Archived Notes section and restore it anytime."}`}
+          variant={isArchivedRoute ? "restore" : showModal}
+          setShowModal={setShowModal}
+          onClick={archiveNote}
+        />
+      ) : showModal === "delete" ? (
+        <Modal
+          icon={Delete}
+          head="Delete Note"
+          text="Are you sure you want to permanently delete this note? This action cannot be undone."
+          variant={showModal}
+          setShowModal={setShowModal}
+          onClick={deleteNote}
+        />
+      ) : null}
+    </>
   );
 }
