@@ -1,24 +1,30 @@
 import { useQuery } from "@tanstack/react-query";
 import Button from "../../components/Buttons/Button";
 import NavNoteCardList from "../../components/NavNoteCard/NavNoteCardList";
-import { Link, Outlet, useMatches } from "react-router";
+import { Link, Outlet, useMatches, useParams } from "react-router";
 import { useLocation } from "react-router";
 import instance from "../../utils/interceptors";
 
 export default function Notes() {
   const location = useLocation();
   const matches = useMatches();
+  const { tag } = useParams();
 
   const isArchivedRoute = !!matches.find(
     (match) => match.pathname === "/archived",
   )?.pathname;
 
+  const isTagRoute = !!matches.find((match) => match.pathname === "/tags")
+    ?.pathname;
+
+  const API_PATH = tag
+    ? `/notes/tags/${tag}`
+    : `/notes${isArchivedRoute ? "?archived=true" : ""}`;
+
   const { isPending, data } = useQuery({
-    queryKey: ["notes", isArchivedRoute],
+    queryKey: ["notes", isArchivedRoute, API_PATH],
     queryFn: async () => {
-      return await instance.get(
-        `/notes${isArchivedRoute ? "?archived=true" : ""}`,
-      );
+      return await instance.get(API_PATH);
     },
   });
 
@@ -37,6 +43,11 @@ export default function Notes() {
           <p className="text-preset-5 text-custom-neutral-700">
             All your archived notes are stored here. You can restore or delete
             them anytime.
+          </p>
+        ) : isTagRoute ? (
+          <p className="text-preset-5 text-custom-neutral-700">
+            All notes with the <span className="capitalize">"{tag}"</span> tag
+            are shown here.
           </p>
         ) : null}
         {notes?.length ? (
@@ -62,7 +73,7 @@ export default function Notes() {
         )}
       </div>
       <>
-        <Outlet context={{ notes, isArchivedRoute }} />
+        <Outlet context={{ notes, isArchivedRoute, isTagRoute }} />
       </>
     </section>
   );
