@@ -67,7 +67,7 @@
     0px 0px 0px 3px var(--color-custom-neutral-500);
 }
 
-@layer components {
+@layer utilities {
   body {
     @apply text-custom-neutral-950 bg-white;
   }
